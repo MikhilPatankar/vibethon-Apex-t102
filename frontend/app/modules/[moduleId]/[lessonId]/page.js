@@ -14,6 +14,7 @@ const GradientDescentViz = dynamic(() => import('@/components/interactive/Gradie
 const SigmoidExplorer = dynamic(() => import('@/components/interactive/SigmoidExplorer'), { ssr: false, loading: () => <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>Loading explorer...</div> });
 const NeuralNetworkViz = dynamic(() => import('@/components/interactive/NeuralNetworkViz'), { ssr: false, loading: () => <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>Loading network...</div> });
 const DecisionBoundaryExplorer = dynamic(() => import('@/components/interactive/DecisionBoundaryExplorer'), { ssr: false, loading: () => <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>Loading explorer...</div> });
+const CodePlayground = dynamic(() => import('@/components/interactive/CodePlayground'), { ssr: false, loading: () => <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>Loading editor...</div> });
 
 // lessonId → extra embedded interactive
 const LESSON_EXTRAS = {
@@ -223,10 +224,25 @@ export default function LessonPage() {
               <div style={{ height: 3, width: 48, background: lesson?.moduleColor || 'var(--accent)', borderRadius: 2, marginTop: 12 }} />
             </div>
 
-            {/* Content */}
+            {/* Content — skip 'code' sections since playground renders them */}
             <div className="lesson-content">
-              {lesson?.content?.sections?.map((section, i) => renderSection(section, i))}
+              {lesson?.content?.sections?.map((section, i) =>
+                section.type === 'code' && lesson.type === 'code-lab'
+                  ? null
+                  : renderSection(section, i)
+              )}
             </div>
+
+            {/* Code Playground — for code-lab lessons */}
+            {lesson?.type === 'code-lab' && (() => {
+              const starterCode = lesson?.content?.sections?.find(s => s.type === 'code')?.code;
+              return (
+                <div style={{ marginTop: 28 }}>
+                  <div style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--accent)', marginBottom: 12 }}>💻 Live Code Lab</div>
+                  <CodePlayground starterCode={starterCode} title={lesson.title} />
+                </div>
+              );
+            })()}
 
             {/* Embedded interactive for game-type lessons */}
             {lesson?.type === 'game' && (

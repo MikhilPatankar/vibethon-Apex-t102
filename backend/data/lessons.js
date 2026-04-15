@@ -322,32 +322,38 @@ const LESSONS = [
         { type: 'heading', level: 2, text: 'Code Lab: Train Your First ML Model' },
         { type: 'text', body: 'Time to write real code! Run the starter code below, then try modifying it to explore how the model changes.' },
         { type: 'code', language: 'python', caption: 'Starter code — run this first!', code: `import numpy as np
-from sklearn.linear_model import LinearRegression
 
 # Dataset: Study hours vs exam score
-hours = np.array([1, 2, 3, 4, 5, 6, 7, 8]).reshape(-1, 1)
-scores = np.array([45, 50, 55, 62, 70, 75, 82, 88])
+hours  = np.array([1, 2, 3, 4, 5, 6, 7, 8], dtype=float)
+scores = np.array([45, 50, 55, 62, 70, 75, 82, 88], dtype=float)
 
-# Train the model
-model = LinearRegression()
-model.fit(hours, scores)
+# --- Manual Linear Regression (no libraries needed!) ---
+x, y = hours, scores
+w = np.sum((x - x.mean()) * (y - y.mean())) / np.sum((x - x.mean()) ** 2)
+b = y.mean() - w * x.mean()
 
-print(f"Slope (w): {model.coef_[0]:.2f}")
-print(f"Intercept (b): {model.intercept_:.2f}")
-print(f"Equation: score = {model.coef_[0]:.2f} × hours + {model.intercept_:.2f}")
+print(f"Slope  (w): {w:.2f}")
+print(f"Intercept (b): {b:.2f}")
+print(f"Equation: score = {w:.2f} × hours + {b:.2f}")
 print()
 
-# Make predictions
+# Predictions
 for h in [3, 6, 10]:
-    pred = model.predict([[h]])[0]
-    print(f"  {h} hours of study → predicted score: {pred:.1f}")
+    pred = w * h + b
+    print(f"  {h} hours → predicted score: {pred:.1f}")
 
-print(f"\\nR² Score: {model.score(hours, scores):.4f}")` },
-        { type: 'callout', style: 'tip', body: 'R² (R-squared) measures how well the model explains variance in the data. R²=1.0 is perfect, R²=0 means the model is no better than guessing the mean.' },
+# R² Score
+y_hat = w * x + b
+ss_res = np.sum((y - y_hat) ** 2)
+ss_tot = np.sum((y - y.mean()) ** 2)
+r2 = 1 - ss_res / ss_tot
+print(f"\nR\u00b2 Score: {r2:.4f}")` },
+        { type: 'callout', style: 'tip', body: 'R\u00b2 (R-squared) measures how well the model explains variance. R\u00b2=1.0 is perfect, R\u00b2=0 means no better than guessing the mean.' },
         { type: 'list', style: 'unordered', items: [
-          'Try adding a point [9, 91] to the dataset — does R² improve?',
-          'Change the scores to be completely random — watch R² drop!',
+          'Add np.array([9, 91]) to the dataset — does R\u00b2 improve?',
+          'Change scores to completely random values — watch R\u00b2 drop!',
           'Try predicting for 20 hours — is the result realistic?',
+          'What happens when all x values are the same? (division by zero!)',
         ]},
       ],
     },
@@ -446,6 +452,56 @@ print(f"\\nR² Score: {model.score(hours, scores):.4f}")` },
       ],
     },
   },
+  // Logistic Regression Code Lab
+  {
+    lessonId: 'logreg-code-lab',
+    moduleId: 'logistic-regression',
+    title: '💻 Code Lab: Build a Classifier',
+    type: 'code-lab',
+    estimatedMinutes: 20,
+    xpReward: 50,
+    order: 4,
+    content: {
+      sections: [
+        { type: 'heading', level: 2, text: 'Code Lab: Logistic Regression from Scratch' },
+        { type: 'text', body: 'Implement a sigmoid classifier using only numpy. Compute probabilities, apply a decision threshold, and evaluate accuracy.' },
+        { type: 'code', language: 'python', caption: 'Starter code', code: `import numpy as np
+
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z))
+
+# Dataset: [hours_studied, attendance] -> pass/fail
+X = np.array([[1.0,0.4],[2.5,0.6],[3.5,0.7],[4.5,0.8],[0.5,0.3],[1.5,0.5],[5.0,0.9],[0.8,0.35]])
+y = np.array([0, 0, 1, 1, 0, 0, 1, 0])
+
+w = np.array([0.8, 2.5])
+b = -3.2
+
+z     = X @ w + b
+probs = sigmoid(z)
+preds = (probs >= 0.5).astype(int)
+
+print("Probabilities:")
+for i, (p, pr, actual) in enumerate(zip(probs, preds, y)):
+    mark = "✓" if pr == actual else "✗"
+    print(f"  Sample {i+1}: prob={p:.3f}  pred={pr}  actual={actual}  {mark}")
+
+acc = np.mean(preds == y) * 100
+print(f"\\nAccuracy: {acc:.1f}%")
+
+print("\\nThreshold sweep:")
+for t in [0.3, 0.4, 0.5, 0.6, 0.7]:
+    p = (probs >= t).astype(int)
+    print(f"  threshold={t}: accuracy={np.mean(p==y)*100:.1f}%")` },
+        { type: 'callout', style: 'tip', body: 'Try changing the weights w and bias b. Can you find better weights manually?' },
+        { type: 'list', style: 'unordered', items: [
+          'What does sigmoid(0) return? What does it mean?',
+          'Try threshold = 0.3 — does it improve recall?',
+          'Add sample [6.0, 0.95] and predict its class.',
+        ]},
+      ],
+    },
+  },
   {
     lessonId: 'logreg-quiz-lesson',
     moduleId: 'logistic-regression',
@@ -453,7 +509,7 @@ print(f"\\nR² Score: {model.score(hours, scores):.4f}")` },
     type: 'quiz',
     estimatedMinutes: 10,
     xpReward: 0,
-    order: 4,
+    order: 5,
     content: {
       sections: [
         { type: 'heading', level: 2, text: 'Test Your Knowledge 🎯' },
@@ -567,6 +623,59 @@ print(f"\\nR² Score: {model.score(hours, scores):.4f}")` },
       ],
     },
   },
+  // Classification Code Lab
+  {
+    lessonId: 'class-code-lab',
+    moduleId: 'classification',
+    title: '💻 Code Lab: Confusion Matrix & Metrics',
+    type: 'code-lab',
+    estimatedMinutes: 20,
+    xpReward: 50,
+    order: 6,
+    content: {
+      sections: [
+        { type: 'heading', level: 2, text: 'Code Lab: Compute Classification Metrics' },
+        { type: 'text', body: 'Build a confusion matrix and compute Accuracy, Precision, Recall and F1 from scratch using numpy — no sklearn needed.' },
+        { type: 'code', language: 'python', caption: 'Starter code — compute metrics from scratch', code: `import numpy as np
+
+y_true = np.array([1,0,1,1,0,1,0,0,1,0,1,1,0,0,1])
+y_pred = np.array([1,0,1,0,0,1,1,0,1,0,0,1,0,1,1])
+
+# Confusion matrix components
+TP = np.sum((y_true==1) & (y_pred==1))
+TN = np.sum((y_true==0) & (y_pred==0))
+FP = np.sum((y_true==0) & (y_pred==1))
+FN = np.sum((y_true==1) & (y_pred==0))
+
+print("Confusion Matrix:")
+print(f"             Pred=0  Pred=1")
+print(f"  Actual=0:   {TN:3d}     {FP:3d}")
+print(f"  Actual=1:   {FN:3d}     {TP:3d}")
+print()
+
+acc  = (TP + TN) / len(y_true)
+prec = TP / (TP + FP) if (TP + FP) > 0 else 0
+rec  = TP / (TP + FN) if (TP + FN) > 0 else 0
+f1   = 2 * prec * rec / (prec + rec) if (prec + rec) > 0 else 0
+
+print(f"Accuracy:  {acc:.3f} ({acc*100:.1f}%)")
+print(f"Precision: {prec:.3f}")
+print(f"Recall:    {rec:.3f}")
+print(f"F1 Score:  {f1:.3f}")
+
+# Threshold experiment
+probs = np.array([0.9,0.1,0.8,0.4,0.2,0.7,0.6,0.3,0.85,0.15,0.35,0.75,0.25,0.65,0.9])
+print("\\nThreshold vs F1:")
+for t in [0.3, 0.4, 0.5, 0.6, 0.7]:
+    p  = (probs >= t).astype(int)
+    tp = np.sum((y_true==1)&(p==1)); fp = np.sum((y_true==0)&(p==1)); fn = np.sum((y_true==1)&(p==0))
+    pr = tp/(tp+fp+1e-9); re = tp/(tp+fn+1e-9)
+    f  = 2*pr*re/(pr+re+1e-9)
+    print(f"  t={t}: precision={pr:.2f}  recall={re:.2f}  f1={f:.2f}")` },
+        { type: 'callout', style: 'tip', body: 'Lowering the threshold boosts recall (catches more positives) but hurts precision (more false alarms). This is the precision-recall tradeoff.' },
+      ],
+    },
+  },
   {
     lessonId: 'class-quiz-lesson',
     moduleId: 'classification',
@@ -574,7 +683,7 @@ print(f"\\nR² Score: {model.score(hours, scores):.4f}")` },
     type: 'quiz',
     estimatedMinutes: 10,
     xpReward: 0,
-    order: 6,
+    order: 7,
     content: { sections: [{ type: 'heading', level: 2, text: 'Test Your Knowledge 🎯' }, { type: 'text', body: 'Quiz time! Test your understanding of classification metrics.' }] },
   },
 
