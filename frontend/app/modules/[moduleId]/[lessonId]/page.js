@@ -10,6 +10,22 @@ import dynamic from 'next/dynamic';
 
 const LinearRegressionSlider = dynamic(() => import('@/components/interactive/LinearRegressionSlider'), { ssr: false, loading: () => <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>Loading interactive...</div> });
 const OverfittingExplorer = dynamic(() => import('@/components/interactive/OverfittingExplorer'), { ssr: false, loading: () => <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>Loading explorer...</div> });
+const GradientDescentViz = dynamic(() => import('@/components/interactive/GradientDescentViz'), { ssr: false, loading: () => <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>Loading visualizer...</div> });
+const SigmoidExplorer = dynamic(() => import('@/components/interactive/SigmoidExplorer'), { ssr: false, loading: () => <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>Loading explorer...</div> });
+const NeuralNetworkViz = dynamic(() => import('@/components/interactive/NeuralNetworkViz'), { ssr: false, loading: () => <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>Loading network...</div> });
+const DecisionBoundaryExplorer = dynamic(() => import('@/components/interactive/DecisionBoundaryExplorer'), { ssr: false, loading: () => <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>Loading explorer...</div> });
+
+// lessonId → extra embedded interactive
+const LESSON_EXTRAS = {
+  'linreg-gradient-descent': GradientDescentViz,
+  'logreg-sigmoid': SigmoidExplorer,
+  'nn-intro': NeuralNetworkViz,
+  'class-confusion-matrix': DecisionBoundaryExplorer,
+  'class-metrics': DecisionBoundaryExplorer,
+};
+
+const TYPE_ICONS = { reading: '📖', quiz: '🎯', 'code-lab': '💻', interactive: '✨', game: '🎮' };
+const stripEmoji = (s = '') => s.replace(/^[\p{Emoji}\s]+/u, '').trim();
 
 // ── Check Understanding ───────────────────────────────────
 function CheckUnderstanding({ question, options, correctIndex, explanation }) {
@@ -191,19 +207,19 @@ export default function LessonPage() {
               <span>›</span>
               <Link href={`/modules/${moduleId}`} style={{ color: 'var(--accent)' }}>{lesson?.moduleTitle}</Link>
               <span>›</span>
-              <span>{lesson?.title}</span>
+              <span>{stripEmoji(lesson?.title)}</span>
             </div>
 
             {/* Lesson header */}
             <div style={{ marginBottom: 32 }}>
               <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginBottom: 8, flexWrap: 'wrap' }}>
-                <span style={{ padding: '4px 10px', borderRadius: 'var(--radius-full)', background: 'var(--accent-soft)', border: '1px solid var(--border-accent)', fontSize: '0.78rem', fontWeight: 600, color: 'var(--accent)' }}>
-                  {lesson?.type}
+                <span style={{ padding: '4px 10px', borderRadius: 'var(--radius-full)', background: 'var(--accent-soft)', border: '1px solid var(--border-accent)', fontSize: '0.78rem', fontWeight: 600, color: 'var(--accent)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                  {TYPE_ICONS[lesson?.type] || '📖'} {lesson?.type}
                 </span>
                 <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>🕐 {lesson?.estimatedMinutes} min</span>
                 {lesson?.xpReward > 0 && <span style={{ fontSize: '0.78rem', color: 'var(--orange)', fontWeight: 600 }}>⚡ +{lesson?.xpReward} XP</span>}
               </div>
-              <h1 style={{ fontSize: '2rem', lineHeight: 1.2 }}>{lesson?.title}</h1>
+              <h1 style={{ fontSize: '2rem', lineHeight: 1.2 }}>{stripEmoji(lesson?.title)}</h1>
               <div style={{ height: 3, width: 48, background: lesson?.moduleColor || 'var(--accent)', borderRadius: 2, marginTop: 12 }} />
             </div>
 
@@ -218,6 +234,17 @@ export default function LessonPage() {
                 <OverfittingExplorer />
               </div>
             )}
+
+            {/* lessonId-specific embedded interactive */}
+            {LESSON_EXTRAS[lessonId] && lesson?.type !== 'game' && (() => {
+              const ExtraComponent = LESSON_EXTRAS[lessonId];
+              return (
+                <div style={{ marginTop: 28 }}>
+                  <div style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.07em', color: 'var(--accent)', marginBottom: 12 }}>✨ Interactive Exercise</div>
+                  <ExtraComponent />
+                </div>
+              );
+            })()}
 
             {/* Complete button */}
             {lesson?.type !== 'quiz' && (

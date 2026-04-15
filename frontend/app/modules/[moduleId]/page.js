@@ -8,6 +8,9 @@ import Navbar from '@/components/Navbar';
 import Toast from '@/components/Toast';
 
 const TYPE_ICONS = { reading: '📖', quiz: '🎯', 'code-lab': '💻', interactive: '✨', game: '🎮' };
+// Strip any leading emoji from title so it doesn't double-up with the TYPE_ICONS prefix
+const stripLeadingEmoji = (str = '') => str.replace(/^[\p{Emoji}\s]+/u, '').trim();
+
 
 export default function ModuleDetailPage() {
   const router = useRouter();
@@ -175,7 +178,7 @@ export default function ModuleDetailPage() {
                     <div style={{ flex: 1 }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <span style={{ fontSize: '1rem' }}>{TYPE_ICONS[lesson.type] || '📖'}</span>
-                        <span style={{ fontWeight: 600, fontSize: '0.92rem', color: locked ? 'var(--text-muted)' : lesson.completed ? 'var(--green)' : 'var(--text-primary)' }}>{lesson.title}</span>
+                        <span style={{ fontWeight: 600, fontSize: '0.92rem', color: locked ? 'var(--text-muted)' : lesson.completed ? 'var(--green)' : 'var(--text-primary)' }}>{stripLeadingEmoji(lesson.title)}</span>
                       </div>
                       <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 2 }}>{lesson.type} · {lesson.estimatedMinutes} min</div>
                     </div>
