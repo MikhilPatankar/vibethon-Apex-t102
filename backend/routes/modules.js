@@ -49,6 +49,13 @@ router.get('/', authMiddleware, async (req, res) => {
           else if (userMod?.status === 'completed') status = 'completed';
           else if (completedCount > 0) status = 'in-progress';
 
+          // Resolve prerequisite titles for display on card
+          const prereqDetails = (m.prerequisites || []).map(preId => {
+            const preMod = modules.find(x => x.moduleId === preId);
+            const done = userModules[preId]?.status === 'completed';
+            return { id: preId, title: preMod?.title || preId, icon: preMod?.icon || '📚', completed: done };
+          });
+
           return {
             moduleId: m.moduleId,
             title: m.title,
@@ -62,6 +69,7 @@ router.get('/', authMiddleware, async (req, res) => {
             progress: parseFloat(prog.toFixed(2)),
             status,
             locked,
+            prerequisites: prereqDetails,
             quizId: m.quizId,
           };
         }),
@@ -90,7 +98,23 @@ router.get('/:moduleId', authMiddleware, async (req, res) => {
       .toArray();
 
     const progress = await db.collection('progress').findOne({ userId: new ObjectId(req.user.userId) });
+    const userModules = progress?.modules || {};
     const completedLessons = progress?.completedLessons || [];
+
+    // Resolve prerequisite details with completion status
+    const prereqDetails = await Promise.all(
+      (mod.prerequisites || []).map(async preId => {
+        const preMod = await db.collection('modules').findOne({ moduleId: preId }, { projection: { title: 1, icon: 1, moduleId: 1 } });
+        return {
+          id: preId,
+          title: preMod?.title || preId,
+          icon: preMod?.icon || '📚',
+          completed: userModules[preId]?.status === 'completed',
+        };
+      })
+    );
+
+    const locked = isLocked(mod, userModules);
 
     const lessonsWithCompletion = lessons.map(l => ({
       lessonId: l.lessonId,
@@ -112,7 +136,8 @@ router.get('/:moduleId', authMiddleware, async (req, res) => {
         tier: mod.tier,
         estimatedMinutes: mod.estimatedMinutes,
         totalLessons: mod.totalLessons,
-        prerequisites: mod.prerequisites,
+        prerequisites: prereqDetails,
+        locked,
         quizId: mod.quizId,
       },
       lessons: lessonsWithCompletion,
