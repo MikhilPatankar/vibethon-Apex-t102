@@ -43,9 +43,6 @@ export default function Navbar() {
   const navLinks = [
     { href: '/dashboard', label: '🏠 Dashboard' },
     { href: '/modules', label: '📚 Modules' },
-    { href: '/playground', label: '💻 Playground' },
-    { href: '/games', label: '🎮 Games' },
-    { href: '/simulations', label: '🔬 Simulations' },
     { href: '/leaderboard', label: '🏆 Leaderboard' },
   ];
 

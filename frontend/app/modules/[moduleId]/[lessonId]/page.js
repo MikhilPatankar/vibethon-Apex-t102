@@ -1,11 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import { api } from '@/lib/api';
 import Navbar from '@/components/Navbar';
 import Toast, { showToast } from '@/components/Toast';
+import dynamic from 'next/dynamic';
+
+const LinearRegressionSlider = dynamic(() => import('@/components/interactive/LinearRegressionSlider'), { ssr: false, loading: () => <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>Loading interactive...</div> });
+const OverfittingExplorer = dynamic(() => import('@/components/interactive/OverfittingExplorer'), { ssr: false, loading: () => <div style={{ padding: 40, textAlign: 'center', color: 'var(--text-muted)' }}>Loading explorer...</div> });
 
 // ── Check Understanding ───────────────────────────────────
 function CheckUnderstanding({ question, options, correctIndex, explanation }) {
@@ -98,16 +102,24 @@ function renderSection(section, index) {
       return <CheckUnderstanding key={index} {...section} />;
 
     case 'interactive':
+      if (section.component === 'linear-regression-slider') {
+        return (
+          <div key={index} style={{ margin: '24px 0' }}>
+            <LinearRegressionSlider {...(section.props || {})} />
+          </div>
+        );
+      }
       return (
         <div key={index} style={{ background: 'var(--bg-tertiary)', border: '1px solid var(--border-accent)', borderRadius: 'var(--radius-lg)', padding: '24px', margin: '24px 0', textAlign: 'center' }}>
           <div style={{ fontSize: '2rem', marginBottom: 8 }}>✨</div>
-          <p style={{ color: 'var(--accent)', fontWeight: 600, marginBottom: 4 }}>Interactive Component</p>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', margin: 0 }}>
-            {section.component} — Full interactive version available in the playground
-          </p>
-          <Link href="/playground" className="btn btn-primary btn-sm" style={{ marginTop: 12 }}>
-            Open Playground →
-          </Link>
+          <p style={{ color: 'var(--accent)', fontWeight: 600 }}>Interactive: {section.component}</p>
+        </div>
+      );
+
+    case 'game':
+      return (
+        <div key={index} style={{ margin: '24px 0' }}>
+          <OverfittingExplorer />
         </div>
       );
 
@@ -199,6 +211,13 @@ export default function LessonPage() {
             <div className="lesson-content">
               {lesson?.content?.sections?.map((section, i) => renderSection(section, i))}
             </div>
+
+            {/* Embedded interactive for game-type lessons */}
+            {lesson?.type === 'game' && (
+              <div style={{ marginTop: 24 }}>
+                <OverfittingExplorer />
+              </div>
+            )}
 
             {/* Complete button */}
             {lesson?.type !== 'quiz' && (
