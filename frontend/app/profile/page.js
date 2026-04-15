@@ -92,7 +92,7 @@ export default function ProfilePage() {
         <div className="container" style={{ maxWidth: 900 }}>
 
           {/* ── HERO CARD ─────────────────────────────── */}
-          <div className="animate-fade" style={{
+          <div className="animate-fade profile-hero-flex" style={{
             position: 'relative', borderRadius: 'var(--radius-xl)', overflow: 'hidden',
             background: 'linear-gradient(135deg, rgba(0,212,170,0.07) 0%, rgba(59,130,246,0.05) 50%, rgba(139,92,246,0.07) 100%)',
             border: '1px solid rgba(0,212,170,0.15)', padding: '36px 40px',
@@ -149,7 +149,7 @@ export default function ProfilePage() {
           </div>
 
           {/* ── STATS ROW ─────────────────────────────── */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 32 }} className="stagger-children">
+          <div className="stats-grid-4 stagger-children" style={{ marginBottom: 32 }}>
             {[
               { icon: '📚', label: 'Modules Done', value: completedModules, color: 'var(--accent)' },
               { icon: '✅', label: 'Lessons Done', value: progress?.stats?.totalLessonsCompleted || 0, color: 'var(--blue)' },
@@ -164,7 +164,7 @@ export default function ProfilePage() {
             ))}
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: 24, alignItems: 'start' }}>
+          <div className="profile-bottom">
             {/* LEFT: Achievements */}
             <div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>

@@ -17,7 +17,7 @@ const FEATURES = [
 const STATS = [
   { label: 'Modules', value: '15' },
   { label: 'Lessons', value: '70+' },
-  { label: 'Interactive Features', value: '8' },
+  { label: 'Interactive\nFeatures', value: '8' },
   { label: 'Achievements', value: '10' },
 ];
 
@@ -69,7 +69,7 @@ export default function LandingPage() {
               {STATS.map(s => (
                 <div key={s.label} style={{ textAlign: 'center' }}>
                   <div style={{ fontSize: '2rem', fontWeight: 800, color: 'var(--accent)' }}>{s.value}</div>
-                  <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: 2 }}>{s.label}</div>
+                  <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: 2, whiteSpace: 'pre-line', lineHeight: 1.3 }}>{s.label}</div>
                 </div>
               ))}
             </div>

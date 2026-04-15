@@ -520,7 +520,186 @@ p  { color: var(--text-secondary); line-height: 1.75; }
 .nav-link.active { color: var(--accent); background: var(--accent-soft); }
 .navbar-right { display: flex; align-items: center; gap: 10px; margin-left: auto; }
 
-@media (max-width: 768px) {
-  .navbar-links { display: none; }
-  .navbar { padding: 0 16px; }
+
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE LAYOUT HELPERS
+   Used by JSX pages to avoid inline-style specificity issues
+══════════════════════════════════════════════════════════ */
+
+/* Two-column layout: main content + sidebar */
+.layout-two-col {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 40px;
+  align-items: start;
 }
+
+/* Stats row — 4 equal columns */
+.stats-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+
+/* Profile bottom split */
+.profile-bottom {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ══════════════════════════════════════════════════════════
+   TABLET  (≤ 1024px)
+══════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .layout-two-col {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .profile-bottom {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .layout-two-col > *:last-child,
+  .profile-bottom > *:last-child {
+    /* sidebar moves below on tablet */
+    grid-row: auto;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   MOBILE  (≤ 768px)
+══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Navbar */
+  .navbar-links { display: none; }
+  .navbar { padding: 0 14px; }
+  .navbar-logo { margin-right: 0; font-size: 1.15rem; }
+
+  /* Page wrapper and container */
+  .page-wrapper { padding: calc(var(--nav-h) + 16px) 0 32px; }
+  .container { padding: 0 14px; max-width: 100% !important; }
+
+  /* Cards */
+  .card { padding: 16px; }
+
+  /* Grid: 4-col → 2-col */
+  .grid-4 { grid-template-columns: repeat(2, 1fr) !important; gap: 10px; }
+  .stats-grid-4 { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+
+  /* Two-col layouts → single column */
+  .layout-two-col { grid-template-columns: 1fr; gap: 20px; }
+  .profile-bottom { grid-template-columns: 1fr; gap: 16px; }
+
+  /* Buttons */
+  .btn { padding: 10px 18px; font-size: 0.88rem; }
+  .btn-sm { padding: 7px 14px; font-size: 0.8rem; }
+
+  /* Lesson content typography */
+  .lesson-content h1, .lesson-content h2 { font-size: 1.2rem !important; }
+  .lesson-content pre, .lesson-content code { font-size: 12px; overflow-x: auto; }
+
+  /* Toast */
+  .toast-container { right: 10px; left: 10px; }
+  .toast { min-width: unset; max-width: unset; width: 100%; }
+
+  /* Quiz */
+  .quiz-option { padding: 12px 14px; font-size: 0.85rem; }
+
+  /* Check-understanding */
+  .cu-option { font-size: 0.82rem; padding: 10px 14px; }
+
+  /* Progress bars */
+  .progress-bar { height: 6px; }
+
+  /* Heading overrides for hero sections */
+  h1 { font-size: clamp(1.4rem, 5vw, 2rem) !important; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   SMALL MOBILE  (≤ 480px)
+══════════════════════════════════════════════════════════ */
+@media (max-width: 480px) {
+  .grid-4 { grid-template-columns: repeat(2, 1fr) !important; gap: 8px; }
+  .stats-grid-4 { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+
+  .card { padding: 14px; border-radius: var(--radius-md); }
+
+  /* Stagger animations are expensive on low-end phones; keep simple */
+  .stagger-children > * { animation-delay: 0s !important; }
+
+  /* Module grid becomes 1 col on tiny screens */
+  .module-grid { grid-template-columns: 1fr !important; }
+
+  /* Leaderboard podium: shrink */
+  .podium-item { min-width: 80px !important; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   COMPONENT-SPECIFIC MOBILE OVERRIDES
+══════════════════════════════════════════════════════════ */
+
+/* Dashboard hero — reduce padding on mobile */
+@media (max-width: 768px) {
+  /* Hero cards with flexWrap already reflow; just adjust padding */
+  .layout-two-col {
+    /* override the inline sidebar width var if set */
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Reduce heavy hero padding */
+  .page-wrapper .container > .animate-fade:first-child {
+    padding: 20px 18px !important;
+  }
+}
+
+/* Code playground — full-width on mobile, output panel height capped */
+@media (max-width: 640px) {
+  /* Monaco editor — shorter height on mobile */
+  .monaco-editor-container { height: 260px !important; }
+}
+
+/* Profile hero — allow flex wrap on mobile */
+@media (max-width: 640px) {
+  .profile-hero-flex { flex-direction: column !important; align-items: flex-start !important; }
+}
+
+/* ── grid-3: feature cards ───────────────────────────── */
+@media (max-width: 900px) {
+  .grid-3 { grid-template-columns: repeat(2, 1fr) !important; }
+}
+@media (max-width: 540px) {
+  .grid-3 { grid-template-columns: 1fr !important; }
+}
+
+/* ── Podium: collapse to 1 column on phones ─────────── */
+@media (max-width: 480px) {
+  .podium-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ── Leaderboard table rows: tighten on mobile ───────── */
+@media (max-width: 480px) {
+  .leaderboard-row-sub { display: none !important; }
+}
+
+/* ── Login / Register forms ──────────────────────────── */
+@media (max-width: 480px) {
+  .auth-card { padding: 24px 18px !important; border-radius: var(--radius-lg) !important; }
+}
+
+/* ── Section padding on mobile ───────────────────────── */
+@media (max-width: 768px) {
+  .section { padding: 48px 0 !important; }
+}
+
+/* ── Breadcrumb wrapping ─────────────────────────────── */
+@media (max-width: 480px) {
+  .lesson-breadcrumb { font-size: 0.72rem !important; }
+}
+
+

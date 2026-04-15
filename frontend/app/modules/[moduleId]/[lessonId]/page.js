@@ -199,7 +199,7 @@ export default function LessonPage() {
       <Navbar />
       <Toast />
       <div className="page-wrapper">
-        <div className="container" style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: 40, alignItems: 'start' }}>
+        <div className="container layout-two-col">
           {/* ── Main content ── */}
           <div className="animate-fade">
             {/* Breadcrumb */}

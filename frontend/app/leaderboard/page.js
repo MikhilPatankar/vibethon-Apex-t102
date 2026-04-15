@@ -153,7 +153,7 @@ export default function LeaderboardPage() {
             <>
               {/* Podium — shown when 2+ players */}
               {showPodium && (
-                <div className="animate-fade" style={{
+                <div className="animate-fade podium-grid" style={{
                   display: 'grid',
                   gridTemplateColumns: podiumOrder.length === 1 ? '1fr' : podiumOrder.length === 2 ? '1fr 1fr' : '1fr 1.15fr 1fr',
                   gap: 16, marginBottom: 32

@@ -175,7 +175,7 @@ export default function DashboardPage() {
           </div>
 
           {/* ── STATS ROW ────────────────────────────────── */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }} className="stagger-children">
+          <div className="stats-grid-4 stagger-children" style={{ marginBottom: 32 }}>
             <StatCard icon="⚡" label="Total XP" value={xp} color="var(--accent)" />
             <StatCard icon="📚" label="Lessons Done" value={progress?.stats?.totalLessonsCompleted || 0} color="var(--blue)" />
             <StatCard icon="🎯" label="Quizzes Passed" value={progress?.stats?.totalQuizzesPassed || 0} color="var(--purple)" sub={`Avg ${progress?.stats?.averageQuizScore || 0}%`} />
@@ -183,7 +183,7 @@ export default function DashboardPage() {
           </div>
 
           {/* ── MAIN GRID ────────────────────────────────── */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: 24, alignItems: 'start' }}>
+          <div className="layout-two-col" style={{ '--layout-sidebar-width': '320px' }}>
 
             {/* LEFT: Continue + Modules */}
             <div>
